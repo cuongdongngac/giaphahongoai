@@ -75,6 +75,7 @@ CREATE TABLE IF NOT EXISTS public.persons (
   birth_order INT,
   generation INT,
   other_names TEXT,
+  tomb_info TEXT,
   avatar_url TEXT,
   note TEXT,
   

@@ -81,6 +81,7 @@ export default function MemberForm({
   const [isDeceased, setIsDeceased] = useState<boolean>(
     initialData?.is_deceased || false,
   );
+  const [tombInfo, setTombInfo] = useState(initialData?.tomb_info || "");
   const [isInLaw, setIsInLaw] = useState<boolean>(
     initialData?.is_in_law || false,
   );
@@ -334,6 +335,7 @@ export default function MemberForm({
         birth_order: birthOrder === "" ? null : Number(birthOrder),
         generation: generation === "" ? null : Number(generation),
         other_names: otherNames || null,
+        tomb_info: isDeceased ? tombInfo.trim() || null : null,
         avatar_url: url,
         note: note || null,
       });
@@ -797,6 +799,7 @@ export default function MemberForm({
                         setDeathLunarYear("");
                         setDeathLunarMonth("");
                         setDeathLunarDay("");
+                        setTombInfo("");
                       }
                     }}
                     className="peer sr-only"
@@ -920,6 +923,19 @@ export default function MemberForm({
                           className={inputClasses}
                         />
                       </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-stone-700 mb-2">
+                        Mộ phần
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={tombInfo}
+                        onChange={(e) => setTombInfo(e.target.value)}
+                        placeholder="Thông tin nơi an táng, số mộ..."
+                        className={`${inputClasses} resize-none`}
+                      />
                     </div>
                   </div>
                 </motion.div>

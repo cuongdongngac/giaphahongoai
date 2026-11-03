@@ -77,7 +77,8 @@ export default function MemberDetailContent({
     !!person.death_day ||
     !!person.death_lunar_year ||
     !!person.death_lunar_month ||
-    !!person.death_lunar_day;
+    !!person.death_lunar_day ||
+    !!person.tomb_info;
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -325,6 +326,16 @@ export default function MemberDetailContent({
                               person.death_day,
                             ) || "Chưa rõ"}
                       </p>
+                    )}
+                    {person.tomb_info && (
+                      <div className="pt-2">
+                        <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1.5">
+                          Mộ phần
+                        </p>
+                        <p className="text-sm font-medium text-stone-700 whitespace-pre-line">
+                          {person.tomb_info}
+                        </p>
+                      </div>
                     )}
                   </div>
                 </motion.div>

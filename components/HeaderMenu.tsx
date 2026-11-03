@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   BarChart2,
   ChevronDown,
+  CircleHelp,
   Database,
   GitMerge,
   Info,
@@ -144,6 +145,17 @@ export default function HeaderMenu() {
               )}
 
               <div className="h-px bg-stone-100 my-1 mx-4" />
+
+              <a
+                href="/help/"
+                target="_blank"
+                rel="noopener"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-amber-800 hover:text-amber-900 hover:bg-amber-50 transition-colors"
+              >
+                <CircleHelp className="size-4" />
+                Hướng dẫn sử dụng
+              </a>
 
               <Link
                 href="/about"

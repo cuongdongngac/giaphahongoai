@@ -29,6 +29,7 @@ interface PersonExport {
   birth_order: number | null;
   generation: number | null;
   other_names: string | null;
+  tomb_info: string | null;
   avatar_url: string | null;
   note: string | null;
   // DB-managed fields (kept in export for traceability, stripped on import)
@@ -95,6 +96,7 @@ function sanitizePerson(
     birth_order: p.birth_order ?? null,
     generation: p.generation ?? null,
     other_names: p.other_names ?? null,
+    tomb_info: p.tomb_info ?? null,
     avatar_url: p.avatar_url ?? null,
     note: p.note ?? null,
   };
@@ -167,7 +169,7 @@ export async function exportData(
   try {
     allPersons = await fetchAll<PersonExport>(
       "persons",
-      "id, full_name, gender, birth_year, birth_month, birth_day, death_year, death_month, death_day, death_lunar_year, death_lunar_month, death_lunar_day, is_deceased, is_in_law, birth_order, generation, other_names, avatar_url, note, created_at, updated_at",
+      "id, full_name, gender, birth_year, birth_month, birth_day, death_year, death_month, death_day, death_lunar_year, death_lunar_month, death_lunar_day, is_deceased, is_in_law, birth_order, generation, other_names, tomb_info, avatar_url, note, created_at, updated_at",
       "created_at",
     );
     allRels = await fetchAll<RelationshipExport>(
@@ -250,7 +252,7 @@ export async function exportData(
   }
 
   return {
-    version: 3, // v3: adds death_lunar_*, person_details_private, relationship note, custom_events
+    version: 4, // v4: adds tomb_info on persons
     timestamp: new Date().toISOString(),
     persons: exportPersons,
     relationships: exportRels,
@@ -265,11 +267,11 @@ export async function importData(
   importPayload:
     | BackupPayload
     | {
-        persons: PersonExport[];
-        relationships: Relationship[];
-        person_details_private?: PersonDetailsPrivateExport[];
-        custom_events?: CustomEventExport[];
-      },
+      persons: PersonExport[];
+      relationships: Relationship[];
+      person_details_private?: PersonDetailsPrivateExport[];
+      custom_events?: CustomEventExport[];
+    },
 ) {
   const isAdmin = await getIsAdmin();
   if (!isAdmin) {

@@ -50,6 +50,7 @@ export interface Person {
   birth_order: number | null;
   generation: number | null;
   other_names: string | null;
+  tomb_info: string | null;
 }
 
 export interface Relationship {
@@ -74,7 +75,20 @@ export interface GalleryItem {
   title: string;
   description: string | null;
   image_url: string;
+  storage_path: string | null; // đường dẫn file trong bucket 'gallery' (để xoá)
+  width: number | null;
+  height: number | null;
+  album: string | null; // nhóm ảnh, ví dụ: "Giỗ Tổ 2026"
   event_date: string | null; // ISO string or date string
+  person_ids: string[]; // thành viên có trong ảnh
+  is_public: boolean; // false = chỉ người đã đăng nhập mới xem
   created_at: string;
+  updated_at: string;
   created_by: string | null;
+}
+
+/** Thông tin rút gọn của thành viên được gắn trong ảnh. */
+export interface GalleryPersonRef {
+  id: string;
+  full_name: string;
 }
