@@ -2,6 +2,7 @@
 
 import DefaultAvatar from "@/components/DefaultAvatar";
 import RelationshipManager from "@/components/RelationshipManager";
+import { useMemberListView } from "@/context/MemberListContext";
 import { Person } from "@/types";
 import {
   calculateAge,
@@ -40,6 +41,7 @@ export default function MemberDetailContent({
   isAdmin,
   canEdit = false,
 }: MemberDetailContentProps) {
+  const { setAvatarPreview } = useMemberListView();
   const [isNoteExpanded, setIsNoteExpanded] = useState(false);
   const [relStats, setRelStats] = useState<{
     biologicalChildren: number;
@@ -126,6 +128,14 @@ export default function MemberDetailContent({
                    ? "bg-linear-to-br from-rose-400 to-rose-700"
                    : "bg-linear-to-br from-stone-400 to-stone-600"
              }`}
+            onClick={() => {
+              if (!person.avatar_url) return;
+              setAvatarPreview({
+                src: person.avatar_url,
+                alt: person.full_name,
+              });
+            }}
+            title={person.avatar_url ? "Xem ảnh đại diện" : undefined}
           >
             {person.avatar_url ? (
               <Image
@@ -134,7 +144,7 @@ export default function MemberDetailContent({
                 alt={person.full_name}
                 width={128}
                 height={128}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover cursor-zoom-in"
               />
             ) : (
               <DefaultAvatar gender={person.gender} size={128} />

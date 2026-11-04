@@ -1,4 +1,5 @@
 import MemberDetailModal from "@/components/modal/MemberDetailModal";
+import AvatarPreviewModal from "@/components/modal/AvatarPreviewModal";
 import GalleryClient from "@/components/gallery/GalleryClient";
 import { MemberListProvider } from "@/context/MemberListContext";
 import { GalleryPersonRef } from "@/types";
@@ -46,6 +47,7 @@ export default async function GalleryPage() {
           isLoggedIn={!!user}
         />
         <MemberDetailModal />
+        <AvatarPreviewModal />
       </MemberListProvider>
     </main>
   );

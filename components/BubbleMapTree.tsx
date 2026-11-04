@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemberListView } from "@/context/MemberListContext";
 import { Person, Relationship } from "@/types";
 import { buildAdjacencyLists, getFilteredTreeData } from "@/utils/treeHelpers";
 import * as d3 from "d3";
@@ -33,6 +34,7 @@ export default function BubbleMapTree({
   relationships,
   roots,
 }: BubbleMapTreeProps) {
+  const { setAvatarPreview } = useMemberListView();
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const [error, setError] = useState<Error | null>(null);
@@ -270,7 +272,16 @@ export default function BubbleMapTree({
 
             const avatarGroup = unitContent
               .append("g")
-              .attr("transform", `translate(${cx}, 0)`);
+              .attr("transform", `translate(${cx}, 0)`)
+              .style("cursor", person.avatar_url ? "zoom-in" : "default")
+              .on("click", (event) => {
+                if (!person.avatar_url) return;
+                event.stopPropagation();
+                setAvatarPreview({
+                  src: person.avatar_url,
+                  alt: person.full_name,
+                });
+              });
 
             avatarGroup
               .append("image")
@@ -322,9 +333,11 @@ export default function BubbleMapTree({
       };
     } catch (err) {
       console.error("D3 rendering error:", err);
-      setError(err instanceof Error ? err : new Error("Unknown error"));
+      queueMicrotask(() => {
+        setError(err instanceof Error ? err : new Error("Unknown error"));
+      });
     }
-  }, [nodes, links]);
+  }, [nodes, links, setAvatarPreview]);
 
   if (error) {
     return (

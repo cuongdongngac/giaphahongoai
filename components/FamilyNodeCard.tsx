@@ -24,7 +24,7 @@ export default function FamilyNodeCard({
   isRingVisible = false,
   isPlusVisible = false,
 }: FamilyNodeCardProps) {
-  const { showAvatar, setMemberModalId } = useMemberListView();
+  const { showAvatar, setAvatarPreview, setMemberModalId } = useMemberListView();
 
   const isDeceased = person.is_deceased;
 
@@ -66,13 +66,23 @@ export default function FamilyNodeCard({
               h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 rounded-full flex items-center justify-center text-[10px] sm:text-xs md:text-sm text-white overflow-hidden shrink-0 shadow-lg ring-2 ring-white transition-transform duration-300 group-hover:scale-105
               ${getAvatarBg(person.gender)}
             `}
+            onClick={(e) => {
+              if (!person.avatar_url) return;
+              e.stopPropagation();
+              e.preventDefault();
+              setAvatarPreview({
+                src: person.avatar_url,
+                alt: person.full_name,
+              });
+            }}
+            title={person.avatar_url ? "Xem ảnh đại diện" : undefined}
           >
             {person.avatar_url ? (
               <Image
                 unoptimized
                 src={person.avatar_url}
                 alt={person.full_name}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover cursor-zoom-in"
                 width={64}
                 height={64}
               />

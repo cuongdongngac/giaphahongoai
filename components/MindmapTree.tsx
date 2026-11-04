@@ -24,7 +24,7 @@ export default function MindmapTree({
   roots,
   canEdit,
 }: MindmapTreeProps) {
-  const { showAvatar, setMemberModalId } = useMemberListView();
+  const { showAvatar, setAvatarPreview, setMemberModalId } = useMemberListView();
   const [hideDaughtersInLaw, setHideDaughtersInLaw] = useState(false);
   const [hideSonsInLaw, setHideSonsInLaw] = useState(false);
   const [hideDaughters, setHideDaughters] = useState(false);
@@ -57,6 +57,7 @@ export default function MindmapTree({
       hideExpandButtons,
       autoCollapseLevel,
       expandSignal,
+      setAvatarPreview,
       setMemberModalId,
     };
   }, [
@@ -72,6 +73,7 @@ export default function MindmapTree({
     hideExpandButtons,
     autoCollapseLevel,
     expandSignal,
+    setAvatarPreview,
     setMemberModalId,
   ]);
 

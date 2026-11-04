@@ -7,6 +7,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 interface MemberListViewState {
   memberModalId: string | null;
   setMemberModalId: (id: string | null) => void;
+  avatarPreview: { src: string; alt: string } | null;
+  setAvatarPreview: (preview: { src: string; alt: string } | null) => void;
   showCreateMember: boolean;
   setShowCreateMember: (show: boolean) => void;
   showAvatar: boolean;
@@ -38,6 +40,10 @@ export function MemberListProvider({
   const [memberModalId, setMemberModalId] = useState<string | null>(
     () => searchParams.get("memberModalId") ?? null,
   );
+  const [avatarPreview, setAvatarPreview] = useState<{
+    src: string;
+    alt: string;
+  } | null>(null);
   const [showCreateMember, setShowCreateMember] = useState(false);
   const [showAvatar, setShowAvatar] = useState<boolean>(
     () => initialShowAvatar ?? searchParams.get("avatar") !== "hide",
@@ -127,6 +133,8 @@ export function MemberListProvider({
       value={{
         memberModalId,
         setMemberModalId: updateModalId,
+        avatarPreview,
+        setAvatarPreview,
         showCreateMember,
         setShowCreateMember,
         showAvatar,
@@ -150,6 +158,8 @@ export function useMemberListView(): MemberListViewState {
     return {
       memberModalId: null,
       setMemberModalId: () => {},
+      avatarPreview: null,
+      setAvatarPreview: () => {},
       showCreateMember: false,
       setShowCreateMember: () => {},
       showAvatar: true,

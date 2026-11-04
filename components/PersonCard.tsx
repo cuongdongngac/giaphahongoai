@@ -12,7 +12,7 @@ interface PersonCardProps {
 }
 
 export default function PersonCard({ person }: PersonCardProps) {
-  const { setMemberModalId } = useMemberListView();
+  const { setAvatarPreview, setMemberModalId } = useMemberListView();
 
   const isDeceased = person.is_deceased;
 
@@ -38,6 +38,16 @@ export default function PersonCard({ person }: PersonCardProps) {
           <div
             className={`size-14 sm:size-16 rounded-full flex items-center justify-center text-xl font-bold text-white overflow-hidden shrink-0 shadow-lg ring-2 ring-white transition-transform duration-300 group-hover:scale-105
             ${getAvatarBg(person.gender)}`}
+            onClick={(e) => {
+              if (!person.avatar_url) return;
+              e.stopPropagation();
+              e.preventDefault();
+              setAvatarPreview({
+                src: person.avatar_url,
+                alt: person.full_name,
+              });
+            }}
+            title={person.avatar_url ? "Xem ảnh đại diện" : undefined}
           >
             {person.avatar_url ? (
               <Image
@@ -46,7 +56,7 @@ export default function PersonCard({ person }: PersonCardProps) {
                 alt={person.full_name}
                 width={32}
                 height={32}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover cursor-zoom-in"
               />
             ) : (
               <DefaultAvatar gender={person.gender} size={32} />

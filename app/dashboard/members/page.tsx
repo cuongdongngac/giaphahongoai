@@ -1,5 +1,6 @@
 import { MemberListProvider } from "@/context/MemberListContext";
 import MembersViews from "@/components/MembersViews";
+import AvatarPreviewModal from "@/components/modal/AvatarPreviewModal";
 import MemberDetailModal from "@/components/modal/MemberDetailModal";
 import ViewToggle from "@/components/ViewToggle";
 import { getProfile, getSupabase } from "@/utils/supabase/queries";
@@ -72,6 +73,7 @@ export default async function FamilyTreePage({ searchParams }: PageProps) {
       />
 
       <MemberDetailModal />
+      <AvatarPreviewModal />
     </MemberListProvider>
   );
 }

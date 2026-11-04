@@ -1,5 +1,6 @@
 import { MemberListProvider } from "@/context/MemberListContext";
 import EventsList from "@/components/EventsList";
+import AvatarPreviewModal from "@/components/modal/AvatarPreviewModal";
 import MemberDetailModal from "@/components/modal/MemberDetailModal";
 import { getSupabase } from "@/utils/supabase/queries";
 
@@ -44,6 +45,7 @@ export default async function EventsPage() {
 
       {/* Modal for member details when clicking an event card */}
       <MemberDetailModal />
+      <AvatarPreviewModal />
     </MemberListProvider>
   );
 }

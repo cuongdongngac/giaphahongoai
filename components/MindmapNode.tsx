@@ -25,6 +25,7 @@ export interface MindmapContextData {
   autoCollapseLevel: number;
   expandSignal: { type: "expand" | "collapse"; ts: number } | null;
   setMemberModalId: (id: string | null) => void;
+  setAvatarPreview: (preview: { src: string; alt: string } | null) => void;
 }
 
 export const getTreeData = (personId: string, ctx: MindmapContextData) => {
@@ -139,6 +140,19 @@ export const MindmapNode = memo(
                       <div className="relative shrink-0">
                         <div
                           className={`size-10 rounded-full overflow-hidden flex items-center justify-center text-white text-xs font-bold shadow-md ring-2 ring-white transition-transform duration-300 group-hover/card:scale-105 ${getAvatarBg(data.person.gender)}`}
+                          onClick={(event) => {
+                            if (!data.person.avatar_url) return;
+                            event.stopPropagation();
+                            ctx.setAvatarPreview({
+                              src: data.person.avatar_url,
+                              alt: data.person.full_name,
+                            });
+                          }}
+                          title={
+                            data.person.avatar_url
+                              ? "Xem ảnh đại diện"
+                              : undefined
+                          }
                         >
                           {data.person.avatar_url ? (
                             <Image
@@ -147,7 +161,7 @@ export const MindmapNode = memo(
                               alt={data.person.full_name}
                               width={40}
                               height={40}
-                              className="h-full w-full object-cover"
+                              className="h-full w-full object-cover cursor-zoom-in"
                             />
                           ) : (
                             <DefaultAvatar
@@ -229,6 +243,19 @@ export const MindmapNode = memo(
                             {ctx.showAvatar && (
                               <div
                                 className={`size-8 rounded-full overflow-hidden flex items-center justify-center text-white text-[10px] font-bold shadow-sm ring-2 ring-white transition-transform duration-300 group-hover/spouse:scale-105 ${getAvatarBg(spouseData.person.gender)}`}
+                                onClick={(event) => {
+                                  if (!spouseData.person.avatar_url) return;
+                                  event.stopPropagation();
+                                  ctx.setAvatarPreview({
+                                    src: spouseData.person.avatar_url,
+                                    alt: spouseData.person.full_name,
+                                  });
+                                }}
+                                title={
+                                  spouseData.person.avatar_url
+                                    ? "Xem ảnh đại diện"
+                                    : undefined
+                                }
                               >
                                 {spouseData.person.avatar_url ? (
                                   <Image
@@ -237,7 +264,7 @@ export const MindmapNode = memo(
                                     alt={spouseData.person.full_name}
                                     width={32}
                                     height={32}
-                                    className="h-full w-full object-cover"
+                                    className="h-full w-full object-cover cursor-zoom-in"
                                   />
                                 ) : (
                                   <DefaultAvatar
