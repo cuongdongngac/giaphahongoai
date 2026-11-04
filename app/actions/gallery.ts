@@ -189,16 +189,23 @@ export async function deleteGalleryItemAction(id: string): Promise<GalleryAction
         .eq("id", id)
         .single();
 
+    if (!existing) return { ok: false, error: "Không tìm thấy ảnh cần xoá. Có thể ảnh đã bị xoá trước đó." };
+
     const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
     const isAdmin = profile?.role === "admin";
-    if (existing && !isAdmin && existing.created_by !== user.id) {
+    if (!isAdmin && existing.created_by !== user.id) {
         return { ok: false, error: "Bạn chỉ có thể xoá ảnh do chính mình đăng." };
     }
 
-    const { error } = await supabase.from("gallery_items").delete().eq("id", id);
+    // .select() trả về các dòng đã xoá. Nếu bị RLS chặn, Supabase KHÔNG báo lỗi mà trả về rỗng,
+    // nên phải kiểm tra để tránh trường hợp "xoá thành công" nhưng thực tế không xoá được gì.
+    const { data: deleted, error } = await supabase.from("gallery_items").delete().eq("id", id).select("id");
     if (error) return { ok: false, error: `Không xoá được ảnh: ${error.message}` };
+    if (!deleted || deleted.length === 0) {
+        return { ok: false, error: "Không xoá được ảnh do phân quyền trên Supabase (RLS)." };
+    }
 
-    const path = existing?.storage_path ?? (existing?.image_url ? storagePathFromUrl(existing.image_url) : null);
+    const path = existing.storage_path ?? (existing.image_url ? storagePathFromUrl(existing.image_url) : null);
     if (path) await supabase.storage.from(GALLERY_BUCKET).remove([path]);
 
     revalidatePath("/dashboard/gallery");
