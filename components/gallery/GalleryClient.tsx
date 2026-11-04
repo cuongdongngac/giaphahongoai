@@ -108,14 +108,12 @@ export default function GalleryClient({
     router.refresh();
   };
 
-  const card = (item: GalleryItem, tall = false) => (
+  const card = (item: GalleryItem) => (
     <button
       key={item.id}
       type="button"
       onClick={() => openItem(item)}
-      className={`group relative block w-full overflow-hidden rounded-2xl bg-stone-100 shadow-sm hover:shadow-xl transition-all duration-300 text-left ${
-        tall ? "break-inside-avoid mb-4" : ""
-      }`}
+      className="group relative block w-full overflow-hidden rounded-2xl bg-stone-100 shadow-sm hover:shadow-xl transition-all duration-300 text-left"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -124,9 +122,7 @@ export default function GalleryClient({
         loading="lazy"
         width={item.width ?? undefined}
         height={item.height ?? undefined}
-        className={`w-full transition-transform duration-500 group-hover:scale-105 ${
-          tall ? "h-auto" : "aspect-4/3 object-cover"
-        }`}
+        className="w-full aspect-4/3 object-cover transition-transform duration-500 group-hover:scale-105"
       />
       {!item.is_public && (
         <span className="absolute top-3 left-3 inline-flex items-center gap-1 rounded-full bg-black/55 px-2 py-0.5 text-[11px] font-medium text-white">
@@ -268,7 +264,9 @@ export default function GalleryClient({
           )}
         </div>
       ) : viewMode === "grid" ? (
-        <div className="columns-2 md:columns-3 xl:columns-4 gap-4">{filtered.map((i) => card(i, true))}</div>
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+          {filtered.map((i) => card(i))}
+        </div>
       ) : (
         <div className="space-y-10">
           {timeline.map(([year, list]) => (
