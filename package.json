@@ -7,6 +7,7 @@
     "build": "vitepress build help && next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "node --test utils/supabase/oauth.test.ts",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "help:dev": "vitepress dev help",

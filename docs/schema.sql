@@ -478,6 +478,27 @@ BEGIN
 END;
 $$;
 
+-- 6. Delete Own Newly Created Account (Block OAuth signups)
+-- Lets a user delete ONLY their own auth account and only if it was created
+-- within the last 10 minutes. Used by /auth/callback to remove accounts that
+-- Supabase auto-created for unregistered Google emails, so Google login works
+-- for pre-existing emails only and never registers new users.
+CREATE OR REPLACE FUNCTION public.delete_own_new_account()
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, auth
+AS $$
+BEGIN
+    DELETE FROM auth.users
+    WHERE id = auth.uid()
+      AND created_at > NOW() - INTERVAL '10 minutes';
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.delete_own_new_account() FROM public;
+GRANT EXECUTE ON FUNCTION public.delete_own_new_account() TO authenticated;
+
 -- ========================================================
 -- 9. GALLERY MODULE
 -- ========================================================

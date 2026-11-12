@@ -3,6 +3,7 @@
 import config from "@/app/config";
 import Footer from "@/components/Footer";
 import { createClient } from "@/utils/supabase/client";
+import { OAUTH_ERROR_MESSAGES } from "@/utils/supabase/oauth";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -13,14 +14,42 @@ import {
   UserPlus,
 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useMemo, useState } from "react";
 
-export default function LoginPage() {
+function GoogleLogo() {
+  return (
+    <svg className="size-5 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        fill="#4285F4"
+        d="M23.5 12.27c0-.85-.08-1.66-.22-2.45H12v4.64h6.45a5.52 5.52 0 0 1-2.39 3.62v3h3.87c2.26-2.09 3.57-5.16 3.57-8.81z"
+      />
+      <path
+        fill="#34A853"
+        d="M12 24c3.24 0 5.96-1.07 7.94-2.91l-3.87-3c-1.08.72-2.45 1.15-4.07 1.15-3.13 0-5.78-2.11-6.73-4.96H1.29v3.1A12 12 0 0 0 12 24z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M5.27 14.28A7.2 7.2 0 0 1 4.89 12c0-.79.14-1.56.38-2.28v-3.1H1.29a12 12 0 0 0 0 10.76l3.98-3.1z"
+      />
+      <path
+        fill="#EA4335"
+        d="M12 4.76c1.76 0 3.34.61 4.58 1.8l3.44-3.44A11.98 11.98 0 0 0 12 0 12 12 0 0 0 1.29 6.62l3.98 3.1C6.22 6.87 8.87 4.76 12 4.76z"
+      />
+    </svg>
+  );
+}
+
+function LoginForm() {
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // Hiển thị lỗi trả về từ callback đăng nhập Google (?error=...).
+  const [error, setError] = useState<string | null>(() => {
+    const oauthError = searchParams.get("error");
+    return oauthError ? (OAUTH_ERROR_MESSAGES[oauthError] ?? null) : null;
+  });
   const [isDemo, setIsDemo] = useState(false);
 
   useEffect(() => {
@@ -40,6 +69,34 @@ export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  // Đăng nhập bằng Google. Chỉ email đã có tài khoản mới được vào;
+  // tài khoản mới sẽ bị route /auth/callback chặn và đăng xuất.
+  const handleGoogleLogin = async () => {
+    setGoogleLoading(true);
+    setError(null);
+    setSuccessMessage(null);
+
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+
+      if (error) {
+        setError(error.message);
+        setGoogleLoading(false);
+      }
+      // Thành công thì trình duyệt chuyển sang Google nên giữ nguyên loading.
+    } catch (err) {
+      console.error(err);
+      setError("Không thể kết nối đăng nhập Google. Vui lòng thử lại.");
+      setGoogleLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -313,6 +370,50 @@ export default function LoginPage() {
                 )}
               </button>
 
+              {isLogin && (
+                <>
+                  <button
+                    type="button"
+                    onClick={handleGoogleLogin}
+                    disabled={loading || googleLoading}
+                    className="w-full flex justify-center items-center gap-3 py-3.5 px-4 text-[15px] font-bold rounded-xl text-stone-700 bg-white hover:bg-stone-50 border border-stone-200/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-400 disabled:opacity-70 disabled:cursor-wait transition-all duration-200 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05)]"
+                  >
+                    {googleLoading ? (
+                      <span className="flex items-center gap-2.5">
+                        <svg
+                          className="animate-spin -ml-1 h-4 w-4 text-stone-500"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                        Đang chuyển sang Google...
+                      </span>
+                    ) : (
+                      <>
+                        <GoogleLogo />
+                        Đăng nhập với Google
+                      </>
+                    )}
+                  </button>
+                  <p className="-mt-2 text-center text-xs text-stone-400 font-medium">
+                    Chỉ áp dụng cho email đã được đăng ký trước.
+                  </p>
+                </>
+              )}
+
               <div className="relative flex items-center py-2 opacity-60">
                 <div className="grow border-t border-stone-200"></div>
                 <span className="shrink-0 mx-4 text-stone-400 text-[11px] uppercase tracking-wider font-bold">
@@ -363,5 +464,31 @@ export default function LoginPage() {
 
       <Footer className="bg-transparent relative z-10 border-none mt-auto" />
     </div>
+  );
+}
+
+function LoginFallback() {
+  return (
+    <div className="min-h-screen flex flex-col bg-[#fafaf9] relative overflow-hidden">
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-size-[24px_24px] pointer-events-none"></div>
+      <div className="flex-1 flex items-center justify-center px-4 py-12 relative z-10 w-full">
+        <div className="max-w-md w-full bg-white/70 backdrop-blur-xl p-10 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/80 flex flex-col items-center gap-4">
+          <span className="inline-flex items-center justify-center p-3.5 bg-white rounded-2xl shadow-sm ring-1 ring-stone-100">
+            <Shield className="size-8 text-amber-600" />
+          </span>
+          <p className="text-sm text-stone-500 font-semibold tracking-wide">
+            Đang tải trang đăng nhập...
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<LoginFallback />}>
+      <LoginForm />
+    </Suspense>
   );
 }

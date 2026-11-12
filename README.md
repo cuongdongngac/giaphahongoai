@@ -20,6 +20,7 @@ Phù hợp với người Việt Nam.
   - [Cách 2: Chạy trên máy cá nhân](#cách-2-chạy-trên-máy-cá-nhân)
 - [Tài khoản đầu tiên](#tài-khoản-đầu-tiên)
 - [Xử lý lỗi khi đăng ký](#xử-lý-lỗi-khi-đăng-ký)
+- [Đăng nhập bằng Google (chỉ email đã có tài khoản)](#đăng-nhập-bằng-google-chỉ-email-đã-có-tài-khoản)
 - [Phân quyền người dùng (User Roles)](#phân-quyền-người-dùng-user-roles)
 - [Đóng góp (Contributing)](#đóng-góp-contributing)
 - [Tuyên bố từ chối trách nhiệm & Quyền riêng tư](#tuyên-bố-từ-chối-trách-nhiệm--quyền-riêng-tư)
@@ -146,6 +147,37 @@ Sau khi cài đặt xong, nếu bạn gặp lỗi `Failed to fetch` khi đăng k
 5. Nhấn **Save** và thử lại.
 
 > **Lưu ý:** Thay `giapha-os.vercel.app` bằng domain thực tế của bạn. Nếu dùng domain tùy chỉnh, hãy thêm cả domain đó vào danh sách.
+
+---
+
+## Đăng nhập bằng Google (chỉ email đã có tài khoản)
+
+Trang đăng nhập có nút **Đăng nhập với Google**. Tính năng này **chỉ cho phép những email đã được đăng ký/tạo tài khoản từ trước** — email lạ đăng nhập bằng Google sẽ bị từ chối và tài khoản vừa tạo nhầm sẽ tự động bị xóa, không cho đăng ký mới qua Google.
+
+Để bật tính năng này, cần cấu hình thêm 2 bước trên Supabase (chỉ làm 1 lần):
+
+### Bước 1: Bật Google provider
+
+1. Vào [Supabase Dashboard](https://supabase.com/dashboard) → chọn Project → **Authentication → Providers**.
+2. Bật **Google** và điền **Client ID** + **Client Secret**.
+   - Lấy 2 giá trị này tại [Google Cloud Console](https://console.cloud.google.com/) → **APIs & Services → Credentials → Create Credentials → OAuth client ID** (loại **Web application**).
+   - Khi tạo OAuth client, thêm **Authorized redirect URI** đúng 1 dòng:
+     - `https://<project-ref>.supabase.co/auth/v1/callback` (thay `<project-ref>` bằng mã project Supabase của bạn; xem trong **Project Settings → General → Reference ID**).
+3. Nhấn **Save** trên Supabase.
+
+### Bước 2: Chạy migration chống đăng ký qua Google (database đã tạo từ trước)
+
+Nếu database của bạn được tạo từ `docs/schema.sql` **trước ngày 12/11/2026**, hãy chạy thêm 1 migration để Supabase có hàm tự xóa tài khoản Google lạ:
+
+1. Mở file [`docs/migrations/20261112_google_oauth_cleanup.sql`](docs/migrations/20261112_google_oauth_cleanup.sql), copy toàn bộ nội dung.
+2. Vào **Supabase Dashboard → SQL Editor → New query**, dán vào và bấm **RUN**.
+
+> Database tạo mới từ `docs/schema.sql` hiện tại đã có sẵn hàm này, không cần chạy thêm.
+
+### Kiểm tra nhanh
+
+1. Mở trang `/login`, bấm **Đăng nhập với Google**, chọn một email **đã có tài khoản** → vào được dashboard.
+2. Thử lại với một email **chưa từng đăng ký** → phải thấy thông báo *"Email Google này chưa được đăng ký..."* và vẫn ở trang đăng nhập.
 
 ---
 

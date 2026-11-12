@@ -30,6 +30,18 @@ Sau khi có tài khoản, người quản trị phải **cấp quyền sửa** t
 Đăng nhập một lần, lần sau mở lại vẫn còn — không phải gõ lại mỗi lần. Chỉ khi bấm **Đăng xuất** (trong menu) mới phải đăng nhập lại.
 :::
 
+## Đăng nhập bằng Google
+
+Nếu tài khoản của mình dùng **địa chỉ Gmail**, có thể bấm nút **Đăng nhập với Google** (nút trắng, có chữ G nhiều màu) thay vì gõ mật khẩu. Các bước:
+
+1. Bấm nút **Đăng nhập với Google**.
+2. Chọn đúng tài khoản Gmail đã được đăng ký.
+3. Trang tự chuyển về trang chủ là xong.
+
+::: warning Chỉ dùng được email đã đăng ký
+Nút Google **không tạo tài khoản mới**. Nếu chọn email chưa được đăng ký, trang sẽ báo *“Email Google này chưa được đăng ký”* — hãy nhắn người quản trị gia phả để được tạo tài khoản trước, rồi đăng nhập lại.
+:::
+
 ## Báo sai email hoặc mật khẩu?
 
 - Kiểm tra lại email: không có dấu cách, đúng đuôi `@gmail.com`…
